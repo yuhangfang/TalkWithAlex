@@ -12,14 +12,14 @@ if prompt := st.chat_input():
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
 
-    openai.api_key = openai_api_key
+    client = openai.OpenAI(api_key=openai_api_key)
 
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
 # Function to generate chatbot responses
 def get_chatgpt_response(messages):
-    response = openai.ChatCompletion.create(
+    response = client.chat.ChatCompletion.create(
         model="gpt-3.5-turbo",  # Use the appropriate GPT model
         messages=messages
     )
