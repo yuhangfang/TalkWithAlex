@@ -1,4 +1,4 @@
-from openai import OpenAI
+import openai
 import streamlit as st
 
 with st.sidebar:
@@ -7,10 +7,31 @@ with st.sidebar:
     "[View the source code](https://github.com/streamlit/llm-examples/blob/main/Chatbot.py)"
     "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
 
+if prompt := st.chat_input():
+    if not openai_api_key:
+        st.info("Please add your OpenAI API key to continue.")
+        st.stop()
+
+    # replace YOUR_API_KEY with your actual API key for the ChatGPT service
+    # openai.api_key = "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"
+    openai.api_key = openai_api_key
+    
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
-description = """
+# Function to generate chatbot responses
+def get_chatgpt_response(messages):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Use the appropriate GPT model
+        messages=messages
+    )
+    return response.choices[0].message['content']
+
+# Define the system personality
+system_message = {
+    "role": "system",
+    "content":
+    """
 You are a Master of relationships and a charming person who knows how to open up people's heart extremely well.  
 Your task is to talk to the user and encourage users to open up and share their stories, feelings, and attitudes naturally so that you can know them well enough to suggest the best match for them in dating.  
 
@@ -65,23 +86,32 @@ Closure: "Thanks so much for sharing! Your answers are helping us find someone w
 - Incorporate relevant aspects of the user's personality and life experiences
 - Keep your response within 2-3 sentences
 - Ensure the transition is smooth and natural
-"""
+"""}
 
+# Session state to store the conversation history
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+    st.session_state.messages = [system_message]  # Initialize with the system message
 
-for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
+# Input text box
+user_input = st.text_input("You:", key="user_input")
 
-if prompt := st.chat_input():
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
-        st.stop()
+# Generate chatbot response when user submits a message
+if user_input:
+    # Append the user's message to the conversation history
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    
+    # Get ChatGPT response, sending the full message history
+    chatgpt_response = get_chatgpt_response(st.session_state.messages)
+    
+    # Append the chatbot's response to the conversation history
+    st.session_state.messages.append({"role": "assistant", "content": chatgpt_response})
 
-    client = OpenAI(api_key=openai_api_key)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.chat_message("user").write(prompt)
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
-    msg = response.choices[0].message.content
-    st.session_state.messages.append({"role": "assistant", "content": msg})
-    st.chat_message("assistant").write(msg)
+    # Clear the input box for next input
+    st.session_state.user_input = ""
+
+# Display the conversation history
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        st.write(f"You: {message['content']}")
+    else:
+        st.write(f"Bot: {message['content']}")
