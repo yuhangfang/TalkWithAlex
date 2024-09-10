@@ -13,9 +13,8 @@ if prompt := st.chat_input():
         st.stop()
 
     # replace YOUR_API_KEY with your actual API key for the ChatGPT service
-    # openai.api_key = "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"
     openai.api_key = openai_api_key
-    
+
 st.title("💬 Chatbot")
 st.caption("🚀 A Streamlit chatbot powered by OpenAI")
 
