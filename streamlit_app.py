@@ -12,7 +12,6 @@ if prompt := st.chat_input():
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
 
-    # replace YOUR_API_KEY with your actual API key for the ChatGPT service
     openai.api_key = openai_api_key
 
 st.title("💬 Chatbot")
