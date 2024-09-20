@@ -1,5 +1,7 @@
 from openai import OpenAI
 import streamlit as st
+from datetime import datetime
+import pytz
 
 # Sidebar for API key input
 with st.sidebar:
@@ -12,10 +14,6 @@ with st.sidebar:
 st.title("💬 Jimmy Fallon")
 st.caption("🚀 Evaluate how informative their message was in each life event level")
 
-
-from datetime import datetime
-
-import pytz
 
 # Define the desired time zone, e.g., 'US/Eastern' or 'Asia/Kolkata'
 desired_timezone = pytz.timezone('US/Eastern')
