@@ -159,7 +159,7 @@ def format_conversation(messages):
     # <current_life_event>
     # {current_life_event}
     # </current_life_event>
-    
+
 def GetSignalDetectorPrompt(userTranscript):
     prompt = f"""
     You are an AI assistant tasked with analyzing a user transcript. Your job is to analyze the transcript and determine the conversation direction signal based on how the user is engaging with the topic and conversation goal. 
@@ -330,23 +330,26 @@ Provide your output in the following format:
 Ensure that your output is concise, relevant, and tailored to the current conversation direction.
 """
 
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.")
-    st.stop()
 
-# Initialize OpenAI client
-client = OpenAI(api_key=openai_api_key)
-
-# Initialize message history with system personality if it's not already present
-
-greetingMessage = [{
-    "role": "system",
-    "content": greetingPrompt }]
 
 
 
 if "messages" not in st.session_state:
-    st.session_state["messages"] = greetingMessage
+        
+    # If this is the first interaction, generate a dynamic greeting from the AI
+    if openai_api_key:
+         # Initialize OpenAI client
+        client = OpenAI(api_key=openai_api_key)
+
+        # Initialize message history with system personality if it's not already present
+
+        greetingMessage = [{
+            "role": "system",
+            "content": greetingPrompt }]
+        st.session_state["messages"] = greetingMessage
+    else:
+        st.info("Please add your OpenAI API key to generate the greeting.")
+        st.stop()
     
 
 if len(st.session_state.messages)<2:
